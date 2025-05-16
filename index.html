@@ -133,6 +133,22 @@
         .data-table th {
             background-color: #222;
         }
+
+        .remove-btn {
+            background-color: #e63946;
+            border: none;
+            padding: 5px 7px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+
+        .remove-btn:hover {
+            background-color: #d62828;
+        }
     </style>
 </head>
 
@@ -154,6 +170,8 @@
                 <th>Nome</th>
                 <th>Consumo/h</th>
                 <th>Inventário</th>
+                <th>Duração (d/h)</th>
+                <th>Remover</th>
             </tr>
         </thead>
         <tbody id="data-body">
@@ -166,23 +184,74 @@
         const tbody = document.getElementById("data-body");
         const inputs = document.querySelectorAll(".input-row input");
 
+        function formatDuracao(inventario, consumo) {
+            if (consumo <= 0) return "∞"; // consumo 0 ou negativo = infinito
+            const duracaoHoras = inventario / consumo;
+            const dias = Math.floor(duracaoHoras / 24);
+            const horas = Math.floor(duracaoHoras % 24);
+            return `${dias}d${horas}h`;
+        }
+
+        function atualizarDuracao(tr) {
+            const consumoTd = tr.querySelector(".consumo");
+            const inventarioTd = tr.querySelector(".inventario");
+            const duracaoTd = tr.querySelector(".duracao");
+
+            let consumoNum = parseFloat(consumoTd.textContent);
+            let inventarioNum = parseFloat(inventarioTd.textContent);
+
+            if (isNaN(consumoNum) || isNaN(inventarioNum) || consumoNum <= 0) {
+                duracaoTd.textContent = "Inválido";
+                return;
+            }
+
+            duracaoTd.textContent = formatDuracao(inventarioNum, consumoNum);
+        }
+
         addButton.addEventListener("click", () => {
             const [nome, consumo, inventario] = [...inputs].map(input => input.value.trim());
 
-            if (!nome || !consumo || !inventario) {
-                alert("Preencha todos os campos.");
+            if (!nome || !consumo || !inventario || isNaN(consumo) || isNaN(inventario)) {
+                alert("Preencha todos os campos corretamente.");
+                return;
+            }
+
+            const consumoNum = parseFloat(consumo);
+            const inventarioNum = parseFloat(inventario);
+
+            if (consumoNum <= 0) {
+                alert("O consumo por hora deve ser maior que zero.");
                 return;
             }
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
-            <td>${nome}</td>
-            <td>${consumo}</td>
-            <td>${inventario}</td>
+            <td contenteditable="true" class="nome">${nome}</td>
+            <td contenteditable="true" class="consumo">${consumoNum}</td>
+            <td contenteditable="true" class="inventario">${inventarioNum}</td>
+            <td class="duracao">${formatDuracao(inventarioNum, consumoNum)}</td>
+            <td class="remove-cell">
+                <button class="remove-btn" title="Remover linha">
+                <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" fill="white">
+                    <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5a1 1 0 01-1 .5H7a1 1 0 01-1-.5L4 9zm5 2v8h2v-8H9zm4 0v8h2v-8h-2z"/>
+                </svg>
+                </button>
+            </td>
           `;
+
+            // Atualiza duração sempre que consumo ou inventário for editado
+            tr.querySelectorAll(".consumo, .inventario").forEach(td => {
+                td.addEventListener("input", () => {
+                    atualizarDuracao(tr);
+                });
+            });
+
             tbody.appendChild(tr);
 
-            // Limpa os campos
+            const removeBtn = tr.querySelector(".remove-btn");
+            removeBtn.addEventListener("click", () => {
+                tr.remove();
+            });
             inputs.forEach(input => input.value = "");
         });
     </script>
