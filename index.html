@@ -161,7 +161,7 @@
 
     <header>
         Skindreds MSupp Calculator
-        <button id="exportar-json" style="margin-top: 20px;">Exportar JSON</button>
+        <button id="exportar-json" style="margin-top: 20px;">Exportar</button>
     </header>
 
     <section class="main-content">
@@ -352,10 +352,14 @@
             const url = `${window.location.origin}${window.location.pathname}?data=${base64}`;
 
             // Copia para o clipboard
-            navigator.clipboard.writeText(url);
+            navigator.clipboard.writeText(url).then(() => {
+        alert("Utilize o link copiado para recuperar os dados");
+    }).catch(() => {
+        alert("Erro ao copiar URL para a área de transferência.");
+    });
         }
 
-        document.getElementById("exportar-json").addEventListener("click", exportarParaJSON);
+        document.getElementById("exportar-json").addEventListener("click", exportarParaURL);
 
         function importarDaURL() {
             const params = new URLSearchParams(window.location.search);
