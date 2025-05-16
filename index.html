@@ -142,12 +142,14 @@
             border: 1px solid #444;
             color: #fff;
             border-radius: 5px;
+            pointer-events: auto;
         }
 
         .calculo-container input:disabled,
         .calculo-container button:disabled {
             opacity: 0.4;
             cursor: not-allowed;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -247,7 +249,8 @@
             btnRemover.className = "remove-btn";
             btnRemover.addEventListener("click", () => {
                 tr.remove();
-            });
+            verificarHabilitacaoCalculo();
+        });
             tdRemover.appendChild(btnRemover);
 
             tr.appendChild(tdNome);
@@ -265,17 +268,16 @@
             document.querySelector(".input-inventario").value = "";
         });
 
-        btnRemover.addEventListener("click", () => {
-            tr.remove();
-            verificarHabilitacaoCalculo();
-        });
-
         function verificarHabilitacaoCalculo() {
             const tabela = document.querySelector("#data-body");
-            const temLinhas = tabela.children.length > 0;
+  const temLinhas = tabela.children.length > 0;
+  const input = document.getElementById("duracao-desejada");
+  const btn = document.getElementById("calcular-btn");
             document.getElementById("duracao-desejada").disabled = !temLinhas;
             document.getElementById("calcular-btn").disabled = !temLinhas;
-        } document.getElementById("calcular-btn").addEventListener("click", () => {
+        }
+
+        document.getElementById("calcular-btn").addEventListener("click", () => {
             const duracaoDesejada = parseFloat(document.getElementById("duracao-desejada").value);
             if (isNaN(duracaoDesejada) || duracaoDesejada <= 0) return;
 
