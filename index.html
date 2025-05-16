@@ -1,104 +1,189 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Skindreds MSupp Calculator</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #0d0d0d;
-      color: #fff;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skindreds MSupp Calculator</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #0d0d0d;
+            color: #fff;
+        }
 
-    header {
-      background-color: #111;
-      padding: 20px;
-      text-align: center;
-      font-size: 1.8rem;
-      font-weight: bold;
-      border-bottom: 2px solid #444;
-    }
+        header {
+            background-color: #111;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            border-bottom: 2px solid #444;
+        }
 
-    section.hero {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 60px 20px;
-      text-align: center;
-      background: linear-gradient(145deg, #1a1a1a, #111);
-    }
+        section.hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+            text-align: center;
+            background: linear-gradient(145deg, #1a1a1a, #111);
+        }
 
-    section.hero h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
+        section.hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
 
-    section.hero p {
-      font-size: 1.2rem;
-      max-width: 600px;
-    }
+        section.hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+        }
 
-    .products {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      padding: 40px 20px;
-      gap: 30px;
-    }
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 40px 20px;
+            gap: 30px;
+        }
 
-    .product {
-      background-color: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 10px;
-      padding: 20px;
-      width: 280px;
-      text-align: center;
-      transition: transform 0.3s;
-    }
+        .product {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            width: 280px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
 
-    .product:hover {
-      transform: translateY(-5px);
-    }
+        .product:hover {
+            transform: translateY(-5px);
+        }
 
-    .product img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-      margin-bottom: 15px;
-    }
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
 
-    footer {
-      background-color: #111;
-      padding: 20px;
-      text-align: center;
-      font-size: 0.9rem;
-      border-top: 2px solid #444;
-    }
-  </style>
+        footer {
+            background-color: #111;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 2px solid #444;
+        }
+
+        .input-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 30px;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .input-row input {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #1a1a1a;
+            color: #fff;
+            width: 200px;
+        }
+
+        .input-row button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            background-color: #ff2e63;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-row button:hover {
+            background-color: #e02656;
+        }
+
+        .data-table {
+            margin-top: 40px;
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
+        .data-table th,
+        .data-table td {
+            border: 1px solid #333;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .data-table th {
+            background-color: #222;
+        }
+    </style>
 </head>
+
 <body>
 
-  <header>
-    Skindreds MSupp Calculator
-  </header>
+    <header>
+        Skindreds MSupp Calculator
+    </header>
 
-  <section class="hero">
-    <h1>Desperte o Monstro Interior</h1>
-    <p>Suplementos de alta performance para elevar seu treino ao próximo nível.</p>
-  </section>
+    <div class="input-row">
+        <input type="text" placeholder="Nome" />
+        <input type="number" placeholder="Consumo/h" />
+        <input type="number" placeholder="Quantidade no inventário" />
+        <button>Adicionar</button>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Consumo/h</th>
+                <th>Inventário</th>
+            </tr>
+        </thead>
+        <tbody id="data-body">
+            <!-- Linhas adicionadas vão aparecer aqui -->
+        </tbody>
+    </table>
+    </section>
+    <script>
+        const addButton = document.querySelector("button");
+        const tbody = document.getElementById("data-body");
+        const inputs = document.querySelectorAll(".input-row input");
 
-  <section class="products">
-    <div class="product">
-      <img src="https://via.placeholder.com/250x250.png?text=Pré-Treino" alt="Pré-Treino">
-      <h3>Pré-Treino Explosivo</h3>
-      <p>Aumente seu foco e energia com nossa fórmula única.</p>
-    </div>
-    <div class="product">
-      <img src="https://via.placeholder.com/250x250.png?text=Creatina" alt="Creatina">
-      <h3>Creatina Monohidratada</h3>
-      <p>Mais força, mais resistência, mais resultado.</p>
-    </div>
-    <div class="product">
-      <img src="https://via.placeholder.com/250x250.png?text=Whey+Protein" alt="Whey">
+        addButton.addEventListener("click", () => {
+            const [nome, consumo, inventario] = [...inputs].map(input => input.value.trim());
+
+            if (!nome || !consumo || !inventario) {
+                alert("Preencha todos os campos.");
+                return;
+            }
+
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${nome}</td>
+            <td>${consumo}</td>
+            <td>${inventario}</td>
+          `;
+            tbody.appendChild(tr);
+
+            // Limpa os campos
+            inputs.forEach(input => input.value = "");
+        });
+    </script>
+</body>
