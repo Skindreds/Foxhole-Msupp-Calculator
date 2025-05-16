@@ -161,15 +161,18 @@
 
     <header>
         Skindreds MSupp Calculator
+        <button id="exportar-json" style="margin-top: 20px;">Exportar JSON</button>
     </header>
 
     <section class="main-content">
         <div class="coluna-esquerda">
-            <div class="calculo-container">
+            <div class="input-row">
                 <input type="text" placeholder="Nome" class="input-nome" />
                 <input type="number" placeholder="Consumo/h" class="input-consumo" />
                 <input type="number" placeholder="Inventário" class="input-inventario" />
-                <button id="add-button">Adicionar</button>
+                <div class="calculo-container">
+                    <button id="add-button">Adicionar</button>
+                </div>
             </div>
 
             <table class="data-table">
@@ -252,8 +255,8 @@
             btnRemover.className = "remove-btn";
             btnRemover.addEventListener("click", () => {
                 tr.remove();
-            verificarHabilitacaoCalculo();
-        });
+                verificarHabilitacaoCalculo();
+            });
             tdRemover.appendChild(btnRemover);
 
             tr.appendChild(tdNome);
@@ -273,9 +276,9 @@
 
         function verificarHabilitacaoCalculo() {
             const tabela = document.querySelector("#data-body");
-  const temLinhas = tabela.children.length > 0;
-  const input = document.getElementById("duracao-desejada");
-  const btn = document.getElementById("calcular-btn");
+            const temLinhas = tabela.children.length > 0;
+            const input = document.getElementById("duracao-desejada");
+            const btn = document.getElementById("calcular-btn");
             document.getElementById("duracao-desejada").disabled = !temLinhas;
             document.getElementById("calcular-btn").disabled = !temLinhas;
         }
@@ -327,6 +330,60 @@
             tabelaResultado.appendChild(tbody);
             resultadoContainer.appendChild(tabelaResultado);
         });
+
+        function exportarParaURL() {
+            const dadosEsquerda = [];
+            document.querySelectorAll("#data-body tr").forEach((linha) => {
+                const nome = linha.children[0].textContent.trim();
+                const consumo = parseFloat(linha.children[1].textContent);
+                const inventario = parseFloat(linha.children[2].textContent);
+                if (!nome || isNaN(consumo) || isNaN(inventario)) return;
+                dadosEsquerda.push({ nome, consumo, inventario });
+            });
+
+            const dadosDireita = {
+                duracaoDesejada: parseFloat(document.getElementById("duracao-desejada").value) || null,
+            };
+
+            const jsonFinal = { tabela: dadosEsquerda, config: dadosDireita };
+            const jsonStr = JSON.stringify(jsonFinal);
+            const base64 = btoa(encodeURIComponent(jsonStr));
+
+            const url = `${window.location.origin}${window.location.pathname}?data=${base64}`;
+
+            // Copia para o clipboard
+            navigator.clipboard.writeText(url);
+        }
+
+        document.getElementById("exportar-json").addEventListener("click", exportarParaJSON);
+
+        function importarDaURL() {
+            const params = new URLSearchParams(window.location.search);
+            const base64 = params.get("data");
+            if (!base64) return;
+
+            try {
+                const jsonStr = decodeURIComponent(atob(base64));
+                const { tabela, config } = JSON.parse(jsonStr);
+
+                tabela.forEach((item) => {
+                    document.querySelector(".input-nome").value = item.nome;
+                    document.querySelector(".input-consumo").value = item.consumo;
+                    document.querySelector(".input-inventario").value = item.inventario;
+                    document.getElementById("add-button").click();
+                });
+
+                if (config.duracaoDesejada) {
+                    document.getElementById("duracao-desejada").value = config.duracaoDesejada;
+                }
+            } catch (e) {
+                console.error("Erro ao importar dados:", e);
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", importarDaURL);
+
     </script>
 </body>
+
 </html>
