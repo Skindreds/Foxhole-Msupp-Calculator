@@ -22,116 +22,82 @@
             border-bottom: 2px solid #444;
         }
 
-        section.hero {
+        .main-content {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 60px 20px;
-            text-align: center;
-            background: linear-gradient(145deg, #1a1a1a, #111);
-        }
-
-        section.hero h1 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-        }
-
-        section.hero p {
-            font-size: 1.2rem;
-            max-width: 600px;
-        }
-
-        .products {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
             padding: 40px 20px;
-            gap: 30px;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .product {
+        .coluna-esquerda,
+        .coluna-direita {
             background-color: #1a1a1a;
             border: 1px solid #333;
             border-radius: 10px;
             padding: 20px;
-            width: 280px;
+            flex: 1 1 400px;
+            max-width: 600px;
+            min-width: 300px;
+        }
+
+        .coluna-direita {
+            opacity: 0.6;
             text-align: center;
-            transition: transform 0.3s;
-        }
-
-        .product:hover {
-            transform: translateY(-5px);
-        }
-
-        .product img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        footer {
-            background-color: #111;
-            padding: 20px;
-            text-align: center;
-            font-size: 0.9rem;
-            border-top: 2px solid #444;
+            color: #999;
         }
 
         .input-row {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
-            margin-top: 30px;
-            justify-content: center;
-            width: 100%;
-            max-width: 900px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .input-row input {
             padding: 10px;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid #333;
-            background-color: #1a1a1a;
+            flex: 1;
+            background-color: #0d0d0d;
+            border: 1px solid #444;
             color: #fff;
-            width: 200px;
+            border-radius: 5px;
         }
 
         .input-row button {
             padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            background-color: #ff2e63;
+            background-color: #0077cc;
+            color: #fff;
             border: none;
             border-radius: 5px;
-            color: white;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
         .input-row button:hover {
-            background-color: #e02656;
+            background-color: #005fa3;
         }
 
         .data-table {
-            margin-top: 40px;
             width: 100%;
-            max-width: 900px;
             border-collapse: collapse;
-            background-color: #1a1a1a;
-            color: #fff;
         }
 
         .data-table th,
         .data-table td {
             border: 1px solid #333;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
         }
 
         .data-table th {
             background-color: #222;
+            font-weight: bold;
+        }
+
+        .data-table td[contenteditable="true"] {
+            background-color: #111;
+            outline: none;
+            cursor: text;
         }
 
         .remove-btn {
@@ -149,6 +115,40 @@
         .remove-btn:hover {
             background-color: #d62828;
         }
+
+        .remove-btn::after {
+            content: "🗑️";
+            font-size: 16px;
+        }
+
+        footer {
+            background-color: #111;
+            padding: 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 2px solid #444;
+        }
+
+        .calculo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .calculo-container input,
+        .calculo-container button {
+            padding: 10px;
+            background-color: #0d0d0d;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+        }
+
+        .calculo-container input:disabled,
+        .calculo-container button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
@@ -158,101 +158,170 @@
         Skindreds MSupp Calculator
     </header>
 
-    <div class="input-row">
-        <input type="text" placeholder="Nome" />
-        <input type="number" placeholder="Consumo/h" />
-        <input type="number" placeholder="Quantidade no inventário" />
-        <button>Adicionar</button>
-    </div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Consumo/h</th>
-                <th>Inventário</th>
-                <th>Duração (d/h)</th>
-                <th>Remover</th>
-            </tr>
-        </thead>
-        <tbody id="data-body">
-            <!-- Linhas adicionadas vão aparecer aqui -->
-        </tbody>
-    </table>
-    </section>
-    <script>
-        const addButton = document.querySelector("button");
-        const tbody = document.getElementById("data-body");
-        const inputs = document.querySelectorAll(".input-row input");
+    <section class="main-content">
+        <div class="coluna-esquerda">
+            <div class="input-row">
+                <input type="text" placeholder="Nome" class="input-nome" />
+                <input type="number" placeholder="Consumo/h" class="input-consumo" />
+                <input type="number" placeholder="Inventário" class="input-inventario" />
+                <button id="add-button">Adicionar</button>
+            </div>
 
-        function formatDuracao(inventario, consumo) {
-            if (consumo <= 0) return "∞"; // consumo 0 ou negativo = infinito
-            const duracaoHoras = inventario / consumo;
-            const dias = Math.floor(duracaoHoras / 24);
-            const horas = Math.floor(duracaoHoras % 24);
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Consumo/h</th>
+                        <th>Inventário</th>
+                        <th>Duração (d/h)</th>
+                        <th>Remover</th>
+                    </tr>
+                </thead>
+                <tbody id="data-body"></tbody>
+            </table>
+        </div>
+
+        <div class="coluna-direita">
+            <div class="calculo-container">
+                <input type="number" id="duracao-desejada" placeholder="Duração desejada (em horas)" disabled />
+                <button id="calcular-btn" disabled>Calcular</button>
+            </div>
+            <div id="resultado-container" style="margin-top: 20px;"></div>
+        </div>
+    </section>
+
+    <footer>
+        &copy; 2025 Skindreds MSupp Calculator
+    </footer>
+
+    <script>
+        function calcularDuracao(consumo, inventario) {
+            if (consumo <= 0) return "∞";
+            const totalHoras = Math.floor(inventario / consumo);
+            const dias = Math.floor(totalHoras / 24);
+            const horas = totalHoras % 24;
             return `${dias}d${horas}h`;
         }
 
-        function atualizarDuracao(tr) {
-            const consumoTd = tr.querySelector(".consumo");
-            const inventarioTd = tr.querySelector(".inventario");
-            const duracaoTd = tr.querySelector(".duracao");
-
-            let consumoNum = parseFloat(consumoTd.textContent);
-            let inventarioNum = parseFloat(inventarioTd.textContent);
-
-            if (isNaN(consumoNum) || isNaN(inventarioNum) || consumoNum <= 0) {
-                duracaoTd.textContent = "Inválido";
-                return;
-            }
-
-            duracaoTd.textContent = formatDuracao(inventarioNum, consumoNum);
+        function criarCelulaEditavel(valor, tipo, onUpdate) {
+            const td = document.createElement("td");
+            td.contentEditable = "true";
+            td.textContent = valor;
+            td.addEventListener("input", () => {
+                const novoValor = tipo === "number" ? parseFloat(td.textContent) || 0 : td.textContent;
+                onUpdate(novoValor);
+            });
+            return td;
         }
 
-        addButton.addEventListener("click", () => {
-            const [nome, consumo, inventario] = [...inputs].map(input => input.value.trim());
+        document.getElementById("add-button").addEventListener("click", () => {
+            const nome = document.querySelector(".input-nome").value;
+            const consumo = parseFloat(document.querySelector(".input-consumo").value);
+            const inventario = parseFloat(document.querySelector(".input-inventario").value);
 
-            if (!nome || !consumo || !inventario || isNaN(consumo) || isNaN(inventario)) {
-                alert("Preencha todos os campos corretamente.");
-                return;
-            }
-
-            const consumoNum = parseFloat(consumo);
-            const inventarioNum = parseFloat(inventario);
-
-            if (consumoNum <= 0) {
-                alert("O consumo por hora deve ser maior que zero.");
-                return;
-            }
+            if (!nome || isNaN(consumo) || isNaN(inventario)) return;
 
             const tr = document.createElement("tr");
-            tr.innerHTML = `
-            <td contenteditable="true" class="nome">${nome}</td>
-            <td contenteditable="true" class="consumo">${consumoNum}</td>
-            <td contenteditable="true" class="inventario">${inventarioNum}</td>
-            <td class="duracao">${formatDuracao(inventarioNum, consumoNum)}</td>
-            <td class="remove-cell">
-                <button class="remove-btn" title="Remover linha">
-                <svg xmlns="http://www.w3.org/2000/svg" height="16" viewBox="0 0 24 24" width="16" fill="white">
-                    <path d="M3 6h18v2H3V6zm2 3h14l-1.5 12.5a1 1 0 01-1 .5H7a1 1 0 01-1-.5L4 9zm5 2v8h2v-8H9zm4 0v8h2v-8h-2z"/>
-                </svg>
-                </button>
-            </td>
-          `;
 
-            // Atualiza duração sempre que consumo ou inventário for editado
-            tr.querySelectorAll(".consumo, .inventario").forEach(td => {
-                td.addEventListener("input", () => {
-                    atualizarDuracao(tr);
-                });
+            let dados = { nome, consumo, inventario };
+
+            const tdNome = criarCelulaEditavel(nome, "text", (val) => {
+                dados.nome = val;
             });
 
-            tbody.appendChild(tr);
+            const tdConsumo = criarCelulaEditavel(consumo, "number", (val) => {
+                dados.consumo = val;
+                tdDuracao.textContent = calcularDuracao(dados.consumo, dados.inventario);
+            });
 
-            const removeBtn = tr.querySelector(".remove-btn");
-            removeBtn.addEventListener("click", () => {
+            const tdInventario = criarCelulaEditavel(inventario, "number", (val) => {
+                dados.inventario = val;
+                tdDuracao.textContent = calcularDuracao(dados.consumo, dados.inventario);
+            });
+
+            const tdDuracao = document.createElement("td");
+            tdDuracao.textContent = calcularDuracao(consumo, inventario);
+
+            const tdRemover = document.createElement("td");
+            const btnRemover = document.createElement("button");
+            btnRemover.className = "remove-btn";
+            btnRemover.addEventListener("click", () => {
                 tr.remove();
             });
-            inputs.forEach(input => input.value = "");
+            tdRemover.appendChild(btnRemover);
+
+            tr.appendChild(tdNome);
+            tr.appendChild(tdConsumo);
+            tr.appendChild(tdInventario);
+            tr.appendChild(tdDuracao);
+            tr.appendChild(tdRemover);
+
+            document.getElementById("data-body").appendChild(tr);
+            verificarHabilitacaoCalculo();
+
+            // Limpar os campos
+            document.querySelector(".input-nome").value = "";
+            document.querySelector(".input-consumo").value = "";
+            document.querySelector(".input-inventario").value = "";
+        });
+
+        btnRemover.addEventListener("click", () => {
+            tr.remove();
+            verificarHabilitacaoCalculo();
+        });
+
+        function verificarHabilitacaoCalculo() {
+            const tabela = document.querySelector("#data-body");
+            const temLinhas = tabela.children.length > 0;
+            document.getElementById("duracao-desejada").disabled = !temLinhas;
+            document.getElementById("calcular-btn").disabled = !temLinhas;
+        } document.getElementById("calcular-btn").addEventListener("click", () => {
+            const duracaoDesejada = parseFloat(document.getElementById("duracao-desejada").value);
+            if (isNaN(duracaoDesejada) || duracaoDesejada <= 0) return;
+
+            const resultadoContainer = document.getElementById("resultado-container");
+            resultadoContainer.innerHTML = ""; // Limpa resultados anteriores
+
+            const tabelaResultado = document.createElement("table");
+            tabelaResultado.className = "data-table";
+
+            const thead = document.createElement("thead");
+            thead.innerHTML = `
+    <tr>
+      <th>Nome</th>
+      <th>Inventário</th>
+      <th>Faltam</th>
+    </tr>
+  `;
+
+            const tbody = document.createElement("tbody");
+
+            document.querySelectorAll("#data-body tr").forEach((linha) => {
+                const nome = linha.children[0].textContent.trim();
+                const consumo = parseFloat(linha.children[1].textContent);
+                const inventario = parseFloat(linha.children[2].textContent);
+
+                if (isNaN(consumo) || isNaN(inventario)) return;
+
+                const inventarioDesejado = consumo * duracaoDesejada;
+                let faltam = inventarioDesejado - inventario;
+                if (faltam < 0) faltam = 0;
+
+                const tr = document.createElement("tr");
+
+                tr.innerHTML = `
+      <td>${nome}</td>
+      <td>${inventario}</td>
+      <td>${faltam.toFixed(2)}</td>
+    `;
+
+                tbody.appendChild(tr);
+            });
+
+            tabelaResultado.appendChild(thead);
+            tabelaResultado.appendChild(tbody);
+            resultadoContainer.appendChild(tabelaResultado);
         });
     </script>
 </body>
+</html>
