@@ -161,7 +161,13 @@
 
     <header>
         Skindreds MSupp Calculator
-        <button id="exportar-json" style="margin-top: 20px;">Exportar</button>
+        <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <select id="profile-select" style="background:#0d0d0d; color:#fff; border:1px solid #444; padding:8px; border-radius:5px;"></select>
+            <button id="add-profile">Nova Base</button>
+            <button id="delete-profile">Remover Base</button>
+            <button id="importar-json">Importar</button>
+            <button id="exportar-json">Exportar</button>
+        </div>
     </header>
 
     <section class="main-content">
@@ -181,8 +187,9 @@
                         <th>Nome</th>
                         <th>Consumo/h</th>
                         <th>Inventário</th>
-                        <th>Duração (d/h)</th>
-                        <th>Remover</th>
+                        <th>Atualizado</th>
+                        <th>Duração (d/h/m)</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="data-body"></tbody>
@@ -202,192 +209,7 @@
         &copy; 2025 Skindreds MSupp Calculator
     </footer>
 
-    <script>
-        function calcularDuracao(consumo, inventario) {
-            if (consumo <= 0) return "∞";
-            const totalHoras = Math.floor(inventario / consumo);
-            const dias = Math.floor(totalHoras / 24);
-            const horas = totalHoras % 24;
-            return `${dias}d${horas}h`;
-        }
-
-        function criarCelulaEditavel(valor, tipo, onUpdate) {
-            const td = document.createElement("td");
-            td.contentEditable = "true";
-            td.textContent = valor;
-            td.addEventListener("input", () => {
-                const novoValor = tipo === "number" ? parseFloat(td.textContent) || 0 : td.textContent;
-                onUpdate(novoValor);
-            });
-            return td;
-        }
-
-        document.getElementById("add-button").addEventListener("click", () => {
-            const nome = document.querySelector(".input-nome").value;
-            const consumo = parseFloat(document.querySelector(".input-consumo").value);
-            const inventario = parseFloat(document.querySelector(".input-inventario").value);
-
-            if (!nome || isNaN(consumo) || isNaN(inventario)) return;
-
-            const tr = document.createElement("tr");
-
-            let dados = { nome, consumo, inventario };
-
-            const tdNome = criarCelulaEditavel(nome, "text", (val) => {
-                dados.nome = val;
-            });
-
-            const tdConsumo = criarCelulaEditavel(consumo, "number", (val) => {
-                dados.consumo = val;
-                tdDuracao.textContent = calcularDuracao(dados.consumo, dados.inventario);
-            });
-
-            const tdInventario = criarCelulaEditavel(inventario, "number", (val) => {
-                dados.inventario = val;
-                tdDuracao.textContent = calcularDuracao(dados.consumo, dados.inventario);
-            });
-
-            const tdDuracao = document.createElement("td");
-            tdDuracao.textContent = calcularDuracao(consumo, inventario);
-
-            const tdRemover = document.createElement("td");
-            const btnRemover = document.createElement("button");
-            btnRemover.className = "remove-btn";
-            btnRemover.addEventListener("click", () => {
-                tr.remove();
-                verificarHabilitacaoCalculo();
-            });
-            tdRemover.appendChild(btnRemover);
-
-            tr.appendChild(tdNome);
-            tr.appendChild(tdConsumo);
-            tr.appendChild(tdInventario);
-            tr.appendChild(tdDuracao);
-            tr.appendChild(tdRemover);
-
-            document.getElementById("data-body").appendChild(tr);
-            verificarHabilitacaoCalculo();
-
-            // Limpar os campos
-            document.querySelector(".input-nome").value = "";
-            document.querySelector(".input-consumo").value = "";
-            document.querySelector(".input-inventario").value = "";
-        });
-
-        function verificarHabilitacaoCalculo() {
-            const tabela = document.querySelector("#data-body");
-            const temLinhas = tabela.children.length > 0;
-            const input = document.getElementById("duracao-desejada");
-            const btn = document.getElementById("calcular-btn");
-            document.getElementById("duracao-desejada").disabled = !temLinhas;
-            document.getElementById("calcular-btn").disabled = !temLinhas;
-        }
-
-        document.getElementById("calcular-btn").addEventListener("click", () => {
-            const duracaoDesejada = parseFloat(document.getElementById("duracao-desejada").value);
-            if (isNaN(duracaoDesejada) || duracaoDesejada <= 0) return;
-
-            const resultadoContainer = document.getElementById("resultado-container");
-            resultadoContainer.innerHTML = ""; // Limpa resultados anteriores
-
-            const tabelaResultado = document.createElement("table");
-            tabelaResultado.className = "data-table";
-
-            const thead = document.createElement("thead");
-            thead.innerHTML = `
-    <tr>
-      <th>Nome</th>
-      <th>Inventário</th>
-      <th>Faltam</th>
-    </tr>
-  `;
-
-            const tbody = document.createElement("tbody");
-
-            document.querySelectorAll("#data-body tr").forEach((linha) => {
-                const nome = linha.children[0].textContent.trim();
-                const consumo = parseFloat(linha.children[1].textContent);
-                const inventario = parseFloat(linha.children[2].textContent);
-
-                if (isNaN(consumo) || isNaN(inventario)) return;
-
-                const inventarioDesejado = consumo * duracaoDesejada;
-                let faltam = inventarioDesejado - inventario;
-                if (faltam < 0) faltam = 0;
-
-                const tr = document.createElement("tr");
-
-                tr.innerHTML = `
-      <td>${nome}</td>
-      <td>${inventario}</td>
-      <td>${faltam.toFixed(2)}</td>
-    `;
-
-                tbody.appendChild(tr);
-            });
-
-            tabelaResultado.appendChild(thead);
-            tabelaResultado.appendChild(tbody);
-            resultadoContainer.appendChild(tabelaResultado);
-        });
-
-        function exportarParaURL() {
-            const dadosEsquerda = [];
-            document.querySelectorAll("#data-body tr").forEach((linha) => {
-                const nome = linha.children[0].textContent.trim();
-                const consumo = parseFloat(linha.children[1].textContent);
-                const inventario = parseFloat(linha.children[2].textContent);
-                if (!nome || isNaN(consumo) || isNaN(inventario)) return;
-                dadosEsquerda.push({ nome, consumo, inventario });
-            });
-
-            const dadosDireita = {
-                duracaoDesejada: parseFloat(document.getElementById("duracao-desejada").value) || null,
-            };
-
-            const jsonFinal = { tabela: dadosEsquerda, config: dadosDireita };
-            const jsonStr = JSON.stringify(jsonFinal);
-            const base64 = btoa(encodeURIComponent(jsonStr));
-
-            const url = `${window.location.origin}${window.location.pathname}?data=${base64}`;
-
-            // Copia para o clipboard
-            navigator.clipboard.writeText(url).then(() => {
-        alert("Utilize o link copiado para recuperar os dados");
-    }).catch(() => {
-        alert("Erro ao copiar URL para a área de transferência.");
-    });
-        }
-
-        document.getElementById("exportar-json").addEventListener("click", exportarParaURL);
-
-        function importarDaURL() {
-            const params = new URLSearchParams(window.location.search);
-            const base64 = params.get("data");
-            if (!base64) return;
-
-            try {
-                const jsonStr = decodeURIComponent(atob(base64));
-                const { tabela, config } = JSON.parse(jsonStr);
-
-                tabela.forEach((item) => {
-                    document.querySelector(".input-nome").value = item.nome;
-                    document.querySelector(".input-consumo").value = item.consumo;
-                    document.querySelector(".input-inventario").value = item.inventario;
-                    document.getElementById("add-button").click();
-                });
-
-                if (config.duracaoDesejada) {
-                    document.getElementById("duracao-desejada").value = config.duracaoDesejada;
-                }
-            } catch (e) {
-                console.error("Erro ao importar dados:", e);
-            }
-        }
-
-        window.addEventListener("DOMContentLoaded", importarDaURL);
-
-    </script>
+    <script type="module" src="js/main.js"></script>
 </body>
 
 </html>
