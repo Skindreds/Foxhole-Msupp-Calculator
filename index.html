@@ -257,7 +257,8 @@
             border: 1px solid #333;
             border-radius: 10px;
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
+            min-width: 400px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
@@ -306,6 +307,7 @@
             color: #fff;
             border-radius: 6px;
             font-size: 1rem;
+            box-sizing: border-box;
         }
 
         .modal .input-grid input:focus {
@@ -317,11 +319,6 @@
         /* Action Buttons Hover Effects */
         #add-base-btn:hover {
             background-color: #218838;
-            transform: translateY(-1px);
-        }
-
-        #add-image-btn:hover {
-            background-color: #5a2d91;
             transform: translateY(-1px);
         }
     </style>
@@ -344,9 +341,6 @@
     <section style="padding: 20px; text-align: center; background-color: #111; border-bottom: 1px solid #333;">
         <button id="add-base-btn" style="padding: 12px 24px; margin: 0 10px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
             ➕ Adicionar Base
-        </button>
-        <button id="add-image-btn" style="padding: 12px 24px; margin: 0 10px; background-color: #6f42c1; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
-            🖼️ Gerenciar Imagem
         </button>
     </section>
 
@@ -430,25 +424,6 @@
         </div>
     </div>
 
-    <!-- Modal for Managing Image -->
-    <div id="image-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>🖼️ Gerenciar Imagem do Local</h3>
-                <span class="close" id="close-image-modal">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="modal-image-area">
-                    <!-- Image management will be displayed here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="close-image-modal-btn" style="padding: 12px 24px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">
-                    Fechar
-                </button>
-            </div>
-        </div>
-    </div>
 
     <footer>
         &copy; 2025 Skindreds MSupp Calculator

@@ -35,14 +35,11 @@ export class UIController {
             imageDisplayArea: document.getElementById('image-display-area'),
             // Modal elements
             addBaseBtn: document.getElementById('add-base-btn'),
-            addImageBtn: document.getElementById('add-image-btn'),
             addBaseModal: document.getElementById('add-base-modal'),
-            imageModal: document.getElementById('image-modal'),
             modalInputName: document.getElementById('modal-input-nome'),
             modalInputConsumption: document.getElementById('modal-input-consumo'),
             modalInputInventory: document.getElementById('modal-input-inventario'),
             modalAddButton: document.getElementById('modal-add-button'),
-            modalImageArea: document.getElementById('modal-image-area'),
         };
     }
 
@@ -74,9 +71,6 @@ export class UIController {
         if (this.elements.addBaseBtn) {
             this.elements.addBaseBtn.addEventListener('click', () => this.openAddBaseModal());
         }
-        if (this.elements.addImageBtn) {
-            this.elements.addImageBtn.addEventListener('click', () => this.openImageModal());
-        }
         if (this.elements.modalAddButton) {
             this.elements.modalAddButton.addEventListener('click', () => this.onModalAddRow());
         }
@@ -90,24 +84,11 @@ export class UIController {
         if (cancelBaseModal) {
             cancelBaseModal.addEventListener('click', () => this.closeAddBaseModal());
         }
-        const closeImageModal = document.getElementById('close-image-modal');
-        if (closeImageModal) {
-            closeImageModal.addEventListener('click', () => this.closeImageModal());
-        }
-        const closeImageModalBtn = document.getElementById('close-image-modal-btn');
-        if (closeImageModalBtn) {
-            closeImageModalBtn.addEventListener('click', () => this.closeImageModal());
-        }
 
         // Close modals when clicking outside
         if (this.elements.addBaseModal) {
             this.elements.addBaseModal.addEventListener('click', (e) => {
                 if (e.target === this.elements.addBaseModal) this.closeAddBaseModal();
-            });
-        }
-        if (this.elements.imageModal) {
-            this.elements.imageModal.addEventListener('click', (e) => {
-                if (e.target === this.elements.imageModal) this.closeImageModal();
             });
         }
     }
@@ -196,7 +177,7 @@ export class UIController {
         tdActions.style.whiteSpace = 'nowrap';
 
         const btnUpdateInv = document.createElement('button');
-        btnUpdateInv.innerHTML = '✏️';
+        btnUpdateInv.innerHTML = '➕';
         btnUpdateInv.title = 'Atualizar MSupps no inventário';
         btnUpdateInv.style.cssText = 'padding: 5px 8px; margin-right: 5px; background-color: #28a745; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background-color 0.3s;';
         btnUpdateInv.addEventListener('mouseenter', () => btnUpdateInv.style.backgroundColor = '#218838');
@@ -502,7 +483,7 @@ export class UIController {
                 if (!row) return;
                 this.refreshRowComputedCells(trEl, row);
             });
-        }, 30000); // 30s
+        }, 300000); // 5 minutos
     }
 
     async tryImportFromURL() {
@@ -670,7 +651,6 @@ export class UIController {
                     setProfileImage(this.profile, uploadResult.url);
                     saveState(this.state);
                     this.renderImageArea();
-                    if (this.elements.modalImageArea) this.renderModalImageArea(); // Update modal if open
 
                     // Upload successful, no alert needed
                     return;
@@ -686,7 +666,6 @@ export class UIController {
                 setProfileImage(this.profile, compressedDataUrl);
                 saveState(this.state);
                 this.renderImageArea();
-                if (this.elements.modalImageArea) this.renderModalImageArea(); // Update modal if open
 
                 // Fallback upload completed, no alert needed
 
@@ -703,7 +682,6 @@ export class UIController {
         setProfileImage(this.profile, null);
         saveState(this.state);
         this.renderImageArea();
-        if (this.elements.modalImageArea) this.renderModalImageArea(); // Update modal if open
     }
 
     async onMigrateImage() {
@@ -827,18 +805,6 @@ export class UIController {
         }
     }
 
-    openImageModal() {
-        if (this.elements.imageModal) {
-            this.elements.imageModal.style.display = 'block';
-        }
-        this.renderModalImageArea();
-    }
-
-    closeImageModal() {
-        if (this.elements.imageModal) {
-            this.elements.imageModal.style.display = 'none';
-        }
-    }
 
     onModalAddRow() {
         if (!this.elements.modalInputName || !this.elements.modalInputConsumption || !this.elements.modalInputInventory) {
@@ -874,57 +840,6 @@ export class UIController {
         this.closeAddBaseModal();
     }
 
-    renderModalImageArea() {
-        const container = this.elements.modalImageArea;
-        if (!container) return;
-        container.innerHTML = '';
-
-        if (this.profile.image) {
-            // Show existing image
-            const imageContainer = document.createElement('div');
-            imageContainer.style.textAlign = 'center';
-
-            const img = document.createElement('img');
-            img.src = this.profile.image;
-            img.style.cssText = 'max-width: 100%; max-height: 300px; border-radius: 8px; border: 2px solid #333;';
-            img.alt = `Imagem do local ${this.profile.name}`;
-
-            imageContainer.appendChild(img);
-
-            const controls = document.createElement('div');
-            controls.style.cssText = 'margin-top: 15px; display: flex; gap: 10px; justify-content: center;';
-
-            const changeBtn = document.createElement('button');
-            changeBtn.textContent = 'Alterar Imagem';
-            changeBtn.style.cssText = 'padding: 8px 16px; background-color: #0077cc; color: white; border: none; border-radius: 4px; cursor: pointer;';
-            changeBtn.addEventListener('click', () => this.onImageUpload());
-
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'Remover Imagem';
-            removeBtn.style.cssText = 'padding: 8px 16px; background-color: #e63946; color: white; border: none; border-radius: 4px; cursor: pointer;';
-            removeBtn.addEventListener('click', () => this.onImageRemove());
-
-            controls.appendChild(changeBtn);
-            controls.appendChild(removeBtn);
-
-            container.appendChild(imageContainer);
-            container.appendChild(controls);
-        } else {
-            // Show upload area
-            const uploadArea = document.createElement('div');
-            uploadArea.style.cssText = 'border: 2px dashed #444; border-radius: 8px; padding: 40px; cursor: pointer; text-align: center; color: #999; transition: border-color 0.3s;';
-            uploadArea.innerHTML = `
-                <div>
-                    <p>📷 Clique para adicionar uma imagem para este local</p>
-                    <p style="font-size: 0.9rem; color: #666;">Formatos suportados: JPG, PNG, GIF</p>
-                </div>
-            `;
-            uploadArea.addEventListener('click', () => this.onImageUpload());
-            uploadArea.addEventListener('mouseenter', () => uploadArea.style.borderColor = '#0077cc');
-            uploadArea.addEventListener('mouseleave', () => uploadArea.style.borderColor = '#444');
-            container.appendChild(uploadArea);
-        }
-    }
 }
 
 
