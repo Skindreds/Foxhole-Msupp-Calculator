@@ -36,9 +36,9 @@
             border: 1px solid #333;
             border-radius: 10px;
             padding: 20px;
-            flex: 1 1 400px;
-            max-width: 600px;
-            min-width: 300px;
+            flex: 1 1 500px;
+            max-width: 800px;
+            min-width: 400px;
         }
 
         .coluna-direita {
@@ -154,6 +154,176 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+
+        .base-image-section {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 0 20px 20px 20px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .base-image-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .base-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #444;
+            border-radius: 8px;
+            padding: 40px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+            color: #999;
+        }
+
+        .image-upload-area:hover {
+            border-color: #0077cc;
+            color: #fff;
+        }
+
+        .image-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .image-controls button {
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .input-grid input {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #0d0d0d;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .input-grid input:focus {
+            outline: none;
+            border-color: #0077cc;
+            box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.2);
+        }
+
+        #add-button:hover {
+            background-color: #005fa3;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-item-section {
+            border: 1px solid #333;
+        }
+
+        .items-section {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #333;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            background-color: #222;
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #fff;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid #333;
+            text-align: right;
+        }
+
+        .close {
+            color: #999;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+
+        .modal .input-grid input {
+            width: 100%;
+            padding: 12px;
+            background-color: #0d0d0d;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .modal .input-grid input:focus {
+            outline: none;
+            border-color: #0077cc;
+            box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.2);
+        }
+
+        /* Action Buttons Hover Effects */
+        #add-base-btn:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+
+        #add-image-btn:hover {
+            background-color: #5a2d91;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 
@@ -163,47 +333,122 @@
         Skindreds MSupp Calculator
         <div style="margin-top: 12px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
             <select id="profile-select" style="background:#0d0d0d; color:#fff; border:1px solid #444; padding:8px; border-radius:5px;"></select>
-            <button id="add-profile">Nova Base</button>
-            <button id="delete-profile">Remover Base</button>
+            <button id="add-profile">Novo Local</button>
+            <button id="delete-profile">Remover Local</button>
             <button id="importar-json">Importar</button>
             <button id="exportar-json">Exportar</button>
         </div>
     </header>
 
-    <section class="main-content">
-        <div class="coluna-esquerda">
-            <div class="input-row">
-                <input type="text" placeholder="Nome" class="input-nome" />
-                <input type="number" placeholder="Consumo/h" class="input-consumo" />
-                <input type="number" placeholder="Inventário" class="input-inventario" />
-                <div class="calculo-container">
-                    <button id="add-button">Adicionar</button>
-                </div>
-            </div>
+    <!-- Action Buttons -->
+    <section style="padding: 20px; text-align: center; background-color: #111; border-bottom: 1px solid #333;">
+        <button id="add-base-btn" style="padding: 12px 24px; margin: 0 10px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+            ➕ Adicionar Base
+        </button>
+        <button id="add-image-btn" style="padding: 12px 24px; margin: 0 10px; background-color: #6f42c1; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+            🖼️ Gerenciar Imagem
+        </button>
+    </section>
 
+    <!-- Main Content with Image and Bases side by side -->
+    <section style="display: flex; padding: 20px; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <!-- Image Section -->
+        <div class="base-image-section" id="base-image-section" style="flex: 1; min-width: 300px; max-width: 500px;">
+            <div id="image-display-area">
+                <!-- Image will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Bases Table Section -->
+        <div class="items-section" style="flex: 2; min-width: 600px;">
+            <h4 style="margin: 0 0 15px 0; color: #ccc; font-size: 1rem; text-align: center;">🏭 Bases Cadastradas</h4>
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Nome</th>
-                        <th>Consumo/h</th>
-                        <th>Inventário</th>
-                        <th>Atualizado</th>
-                        <th>Duração (d/h/m)</th>
+                        <th>Base</th>
+                        <th>Consumo MSupp/h</th>
+                        <th>MSupps Disponíveis</th>
+                        <th>Última Atualização</th>
+                        <th>Duração Restante</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody id="data-body"></tbody>
             </table>
         </div>
+    </section>
+
+    <section class="main-content" style="padding: 20px;">
+        <div class="coluna-esquerda" style="display: none;">
+            <!-- Hidden - content moved to modals -->
+        </div>
 
         <div class="coluna-direita">
+            <h3 style="margin-top: 0; color: #fff; text-align: center;">📊 Calculadora de MSupps</h3>
             <div class="calculo-container">
-                <input type="number" id="duracao-desejada" placeholder="Duração desejada (em horas)" disabled />
-                <button id="calcular-btn" disabled>Calcular</button>
+                <label for="duracao-desejada" style="color: #ccc; font-size: 0.9rem; margin-bottom: 8px; display: block;">Calcular MSupps necessários para:</label>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="number" id="duracao-desejada" placeholder="Horas" disabled style="flex: 1;" />
+                    <button id="calcular-btn" disabled>Calcular</button>
+                </div>
             </div>
             <div id="resultado-container" style="margin-top: 20px;"></div>
         </div>
     </section>
+
+    <!-- Modal for Adding Base -->
+    <div id="add-base-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ Adicionar Nova Base</h3>
+                <span class="close" id="close-base-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="input-grid" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                    <div>
+                        <label style="color: #ccc; font-size: 0.9rem; display: block; margin-bottom: 8px;">Nome da Base</label>
+                        <input type="text" placeholder="Ex: Base Norte, FOB Alpha" class="input-nome" id="modal-input-nome" />
+                    </div>
+                    <div>
+                        <label style="color: #ccc; font-size: 0.9rem; display: block; margin-bottom: 8px;">Consumo MSupp/h</label>
+                        <input type="number" placeholder="120" class="input-consumo" id="modal-input-consumo" />
+                    </div>
+                    <div>
+                        <label style="color: #ccc; font-size: 0.9rem; display: block; margin-bottom: 8px;">MSupps no Inventário</label>
+                        <input type="number" placeholder="5000" class="input-inventario" id="modal-input-inventario" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-add-button" style="padding: 12px 24px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                    ➕ Adicionar Base
+                </button>
+                <button id="cancel-base-modal" style="padding: 12px 24px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 10px;">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Managing Image -->
+    <div id="image-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🖼️ Gerenciar Imagem do Local</h3>
+                <span class="close" id="close-image-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="modal-image-area">
+                    <!-- Image management will be displayed here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="close-image-modal-btn" style="padding: 12px 24px; background-color: #6c757d; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         &copy; 2025 Skindreds MSupp Calculator
